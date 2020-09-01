@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FE9738FC-3457-48CF-86A2-4F4C4647C25C}</ProjectGuid>
+    <ProjectGuid>{7EFD730B-5F1D-4398-A9E8-B0777A9BA34F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SaritasaGen.Infrastructure.Abstractions</RootNamespace>
-    <AssemblyName>SaritasaGen.Infrastructure.Abstractions</AssemblyName>
+    <RootNamespace>SaritasaGen.Domain</RootNamespace>
+    <AssemblyName>SaritasaGen.Domain</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -34,9 +34,6 @@
     <PackageReference Include="EnvDTE">
       <Version>8.0.2</Version>
     </PackageReference>
-    <PackageReference Include="EnvDTE80">
-      <Version>8.0.2</Version>
-    </PackageReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -47,20 +44,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IDialogService.cs" />
-    <Compile Include="IFormattingService.cs" />
-    <Compile Include="IGenerationService.cs" />
-    <Compile Include="ISearchService.cs" />
+    <Compile Include="ClassModel.cs" />
+    <Compile Include="HandlerData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SaritasaGen.Domain\SaritasaGen.Domain.csproj">
-      <Project>{7EFD730B-5F1D-4398-A9E8-B0777A9BA34F}</Project>
-      <Name>SaritasaGen.Domain</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
