@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30406.217
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaritasaGen.FeatureGenerator", "SaritasaGen.FeatureGenerator\SaritasaGen.FeatureGenerator.csproj", "{731AC879-F21D-47E8-8812-42640FCBE056}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaritasaGen.Infrastructure", "SaritasaGen.Infrastructure\SaritasaGen.Infrastructure.csproj", "{5917F42C-BCBD-46FD-ABAF-24479ABEAD02}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaritasaGen.Infrastructure.Abstractions", "SaritasaGen.Infrastructure.Abstractions\SaritasaGen.Infrastructure.Abstractions.csproj", "{81BBE9D9-B691-4EE5-A352-75844E4A215F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{731AC879-F21D-47E8-8812-42640FCBE056}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{731AC879-F21D-47E8-8812-42640FCBE056}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{731AC879-F21D-47E8-8812-42640FCBE056}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{731AC879-F21D-47E8-8812-42640FCBE056}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5917F42C-BCBD-46FD-ABAF-24479ABEAD02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5917F42C-BCBD-46FD-ABAF-24479ABEAD02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5917F42C-BCBD-46FD-ABAF-24479ABEAD02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5917F42C-BCBD-46FD-ABAF-24479ABEAD02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81BBE9D9-B691-4EE5-A352-75844E4A215F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81BBE9D9-B691-4EE5-A352-75844E4A215F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81BBE9D9-B691-4EE5-A352-75844E4A215F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81BBE9D9-B691-4EE5-A352-75844E4A215F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B81A6293-22F4-4BC9-96C6-106BADC2EF4C}
+	EndGlobalSection
+EndGlobal
