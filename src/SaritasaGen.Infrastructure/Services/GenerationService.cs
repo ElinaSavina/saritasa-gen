@@ -15,15 +15,15 @@ namespace SaritasaGen.Infrastructure.Services
     /// </summary>
     public class GenerationService : IGenerationService
     {
-        private readonly SearchService searchService;
-        private readonly FormattingService formattingService;
+        private readonly ISearchService searchService;
+        private readonly IFormattingService formattingService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenerationService" /> class.
         /// </summary>
         /// <param name="searchService">Search service.</param>
         /// <param name="formattingService">Formatting service.</param>
-        public GenerationService(SearchService searchService, FormattingService formattingService)
+        public GenerationService(ISearchService searchService, IFormattingService formattingService)
         {
             this.searchService = searchService;
             this.formattingService = formattingService;

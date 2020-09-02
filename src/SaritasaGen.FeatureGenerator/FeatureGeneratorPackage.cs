@@ -1,5 +1,7 @@
 ﻿using Microsoft.VisualStudio.Shell;
+using SaritasaGen.FeatureGenerator.Commands;
 using SaritasaGen.FeatureGenerator.DependencyInjection;
+using SaritasaGen.FeatureGenerator.Views;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -26,12 +28,14 @@ namespace SaritasaGen.FeatureGenerator
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [Guid(PackageGuidString)]
+    [ProvideMenuResource("Menus.ctmenu", 1)]
+    [ProvideToolWindow(typeof(AddFeatureWindow))]
     public sealed class FeatureGeneratorPackage : AutofacAsyncPackage
     {
         /// <summary>
         /// FeatureGeneratorPackage GUID string.
         /// </summary>
-        public const string PackageGuidString = "5d70b300-83db-4b19-84be-5c43243ac558";
+        public const string PackageGuidString = "cf7df6fc-2212-4be1-b05d-ca9b2ca29dc5";
 
         public FeatureGeneratorPackage()
         {
@@ -52,6 +56,8 @@ namespace SaritasaGen.FeatureGenerator
             // When initialized asynchronously, the current thread may be a background thread at this point.
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            await AddFeatureCommand.InitializeAsync(this);
+            await base.InitializeAsync(cancellationToken, progress);
         }
 
         #endregion Package Members

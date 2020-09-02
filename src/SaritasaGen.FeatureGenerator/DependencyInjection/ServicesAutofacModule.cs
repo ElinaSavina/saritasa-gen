@@ -17,7 +17,7 @@ namespace SaritasaGen.FeatureGenerator.DependencyInjection
             base.Load(builder);
             builder.RegisterType<FormattingService>().As<IFormattingService>().SingleInstance();
             builder.RegisterType<GenerationService>().As<IGenerationService>().SingleInstance();
-            builder.RegisterType<SearchService>().As<IGenerationService>().SingleInstance();
+            builder.RegisterType<SearchService>().As<ISearchService>().SingleInstance();
             builder.RegisterType<DialogService>().As<IDialogService>().SingleInstance();
 
             builder.RegisterType<FeatureViewModel>();

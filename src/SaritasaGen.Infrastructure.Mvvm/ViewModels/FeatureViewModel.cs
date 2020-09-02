@@ -155,9 +155,6 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
         public bool HasErrors => validationErrors.Any();
 
         /// <inheritdoc />
-        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
-
-        /// <inheritdoc />
         public IEnumerable GetErrors(string propertyName)
         {
             if (string.IsNullOrEmpty(propertyName) || !validationErrors.ContainsKey(propertyName))
@@ -166,6 +163,9 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
             }
             return validationErrors[propertyName];
         }
+
+        /// <inheritdoc />
+        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
 
         #endregion INotifyDataErrorInfo members
 
@@ -194,7 +194,7 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
 
             Classes = searchService.FindAllClasses(dte.Solution.Projects);
 
-            Dtos = searchService.FindDtos(dte.Solution.Projects);
+            Dtos = Classes.Where(i => i.ClassName.EndsWith("Dto.cs", StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
         private bool AddCommand_CanExecute(System.Windows.Window arg)
@@ -223,7 +223,7 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
             // We get the first item becase it's not possible when selected items more than 1 and less than 0.
             var selectedItem = dte.SelectedItems.Item(1);
 
-            var project = GetProjectFromSelectedItem(selectedItem);
+            var project = selectedItem.Project ?? selectedItem.ProjectItem.ContainingProject;
 
             // Make sure that file doesn't exist.
             if (searchService.FindItemInProject(project.ProjectItems, FeatureName, EnvDTE.Constants.vsProjectItemKindPhysicalFolder, true) != null)
@@ -244,7 +244,8 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
                 // Install MediatR.
                 generationService.InstallNugetPackage(project, MediatrPackageName);
 
-                var featureFolder = CreateFeature(project, FeatureName);
+                var projectItems = selectedItem.Project?.ProjectItems ?? selectedItem.ProjectItem.ProjectItems;
+                var featureFolder = CreateFeature(projectItems, FeatureName);
 
                 var listOfUsingsForHandler = new List<string>
                 {
@@ -282,10 +283,10 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
             }
         }
 
-        private ProjectItem CreateFeature(Project project, string folderName)
+        private ProjectItem CreateFeature(ProjectItems projectItems, string folderName)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            var featureFolder = project.ProjectItems.AddFolder(folderName, EnvDTE.Constants.vsProjectItemKindPhysicalFolder);
+            var featureFolder = projectItems.AddFolder(folderName, EnvDTE.Constants.vsProjectItemKindPhysicalFolder);
             return featureFolder;
         }
 
@@ -307,17 +308,11 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
             return string.Empty;
         }
 
-        private Project GetProjectFromSelectedItem(SelectedItem selectedItem)
-        {
-            ThreadHelper.ThrowIfNotOnUIThread();
-            return selectedItem.Project ?? selectedItem.ProjectItem.ContainingProject;
-        }
-
         private CodeClass GetOrCreateClass(DTE dte, SelectedItem selectedItem, string className)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            var existsClass = Classes.FirstOrDefault(c => string.Equals(c.ClassName, BaseClassName, StringComparison.OrdinalIgnoreCase));
+            var existsClass = Classes.FirstOrDefault(c => string.Equals(c.ClassName, BaseClassFileName, StringComparison.OrdinalIgnoreCase));
             if (existsClass == null)
             {
                 var projectItems = searchService.GetProjectOrParentFolderItems(dte, selectedItem);
@@ -329,7 +324,7 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
             }
             else
             {
-                return searchService.FindClassInProject(existsClass.ContainingProject.ProjectItems, existsClass.ClassName);
+                return searchService.FindClassInProject(existsClass.ContainingProject.ProjectItems, BaseClassName);
             }
         }
 

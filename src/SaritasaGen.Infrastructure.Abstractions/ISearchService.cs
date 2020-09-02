@@ -53,12 +53,6 @@ namespace SaritasaGen.Infrastructure.Abstractions
         List<ClassModel> FindAllClasses(Projects projects);
 
         /// <summary>
-        /// Find DTOs.
-        /// </summary>
-        /// <param name="projects">Projects.</param>
-        List<ClassModel> FindDtos(Projects projects);
-
-        /// <summary>
         /// Find class by name.
         /// </summary>
         /// <param name="codeNamespace">Namespace.</param>

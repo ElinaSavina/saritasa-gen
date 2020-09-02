@@ -170,14 +170,6 @@ namespace SaritasaGen.Infrastructure.Services
         }
 
         /// <inheritdoc />
-        public List<ClassModel> FindDtos(Projects projects)
-        {
-            ThreadHelper.ThrowIfNotOnUIThread();
-            var items = FindAllClasses(projects);
-            return items.Where(i => i.ClassName.EndsWith("Dto.cs", StringComparison.OrdinalIgnoreCase)).ToList();
-        }
-
-        /// <inheritdoc />
         public CodeClass FindClassByName(CodeNamespace codeNamespace, string className)
         {
             ThreadHelper.ThrowIfNotOnUIThread();

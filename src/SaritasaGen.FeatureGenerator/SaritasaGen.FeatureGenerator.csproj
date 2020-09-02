@@ -6,7 +6,7 @@
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>
@@ -43,6 +43,9 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CopyVsixExtensionFiles>False</CopyVsixExtensionFiles>
+    <DeployExtension>True</DeployExtension>
+    <CreateVsixContainer>True</CreateVsixContainer>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -107,7 +110,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="FeatureGeneratorPackage.vsct" />
+    <VSCTCompile Include="FeatureGeneratorPackage.vsct">
+      <ResourceName>Menus.ctmenu</ResourceName>
+    </VSCTCompile>
   </ItemGroup>
   <ItemGroup>
     <Page Include="Views\AddFeatureControl.xaml">
@@ -116,6 +121,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SaritasaGen.Domain\SaritasaGen.Domain.csproj">
+      <Project>{7efd730b-5f1d-4398-a9e8-b0777a9ba34f}</Project>
+      <Name>SaritasaGen.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SaritasaGen.Infrastructure.Abstractions\SaritasaGen.Infrastructure.Abstractions.csproj">
       <Project>{fe9738fc-3457-48cf-86a2-4f4c4647c25c}</Project>
       <Name>SaritasaGen.Infrastructure.Abstractions</Name>

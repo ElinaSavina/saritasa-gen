@@ -70,10 +70,10 @@
 
   <Symbols>
     <!-- This is the package guid. -->
-    <GuidSymbol name="guidGeneratorPackage" value="{5d70b300-83db-4b19-84be-5c43243ac558}" />
+    <GuidSymbol name="guidGeneratorPackage" value="{cf7df6fc-2212-4be1-b05d-ca9b2ca29dc5}" />
 
     <!-- This is the guid used to group the menu commands together -->
-    <GuidSymbol name="guidGeneratorPackageCmdSet" value="{5774adbf-eea3-4183-bf89-6ac4be140cc1}">
+    <GuidSymbol name="guidGeneratorPackageCmdSet" value="{b83a4e62-fcf5-4091-9ed3-428ca11cf420}">
       <IDSymbol name="MyMenuGroup" value="0x1020" />
       <IDSymbol name="Command1Id" value="0x0100" />
       <IDSymbol value="4129" name="cmdidAddCommandWindowCommand" />

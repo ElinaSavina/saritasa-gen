@@ -21,7 +21,7 @@ namespace SaritasaGen.FeatureGenerator.Commands
         /// <summary>
         /// Command menu group (command set GUID).
         /// </summary>
-        public static readonly Guid CommandSet = new Guid("5774adbf-eea3-4183-bf89-6ac4be140cc1");
+        public static readonly Guid CommandSet = new Guid("b83a4e62-fcf5-4091-9ed3-428ca11cf420");
 
         /// <summary>
         /// VS Package that provides this command, not null.
