@@ -21,7 +21,8 @@ namespace SaritasaGen.FeatureGenerator.Views
         {
             FeatureNameTextBox.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
             BaseClassComboBox.GetBindingExpression(ComboBox.TextProperty)?.UpdateSource();
-            ReturnDtoTextBox.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
+            ReturnDtoTextBox.GetBindingExpression(ComboBox.TextProperty)?.UpdateSource();
+            ReturnBuiltInTextBox.GetBindingExpression(ComboBox.TextProperty)?.UpdateSource();
         }
     }
 }

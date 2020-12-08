@@ -5,8 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              xmlns:calc="clr-namespace:CalcBinding;assembly=CalcBinding"
-             mc:Ignorable="d"
-             d:DesignHeight="210" d:DesignWidth="400">
+             mc:Ignorable="d" d:DesignWidth="400" Height="249.45">
     <UserControl.Resources>
         <ResourceDictionary>
             <Style x:Key="textBoxInError" TargetType="{x:Type TextBox}">
@@ -58,6 +57,10 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -101,35 +104,106 @@
                       SelectedValuePath="ClassName"
                       Style="{StaticResource comboBoxInError}" />
 
-            <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0,5,10,0">
-                <CheckBox
-                      Name="UseDtoCheckBox"
-                      IsChecked="{Binding IsDtoUsed}"
-                      VerticalAlignment="Center"
-                      Margin="0 0 10 0">
-                    Return DTO
-                </CheckBox>
-                <CheckBox
-                      Name="UseListCheckBox"
-                      IsChecked="{Binding IsListReturned}"
-                      VerticalAlignment="Center">
-                    Return List
-                </CheckBox>
-                <ComboBox
-                      Name="ReturnDtoTextBox"
-                      Width="176"
-                      IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True"
-                      IsEnabled="{Binding ElementName=UseDtoCheckBox, Path=IsChecked}"
-                      Validation.ErrorTemplate="{StaticResource validationTemplate}"
-                      Margin="10 0 0 0"
-                      Text="{Binding DtoFileName, UpdateSourceTrigger=LostFocus, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"
-                      ItemsSource="{Binding Dtos}"
-                      DisplayMemberPath="ClassName"
-                      SelectedValuePath="ClassName"
-                      Style="{StaticResource comboBoxInError}" />
-            </StackPanel>
+            <GroupBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top"
+                      Grid.RowSpan="2" Header="Return Options">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel
+                        Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                        Orientation="Horizontal"
+                        Margin="0,5,0,0">
+                        <ComboBox
+                            Name="ReturnTypeComboBox"
+                            IsEditable="False"
+                            Text="{Binding ReturnType}"
+                            Margin="0,0,10,0"
+                            ItemsSource="{Binding ReturnTypes}"
+                            SelectedValue="None"
+                            Width="105" />
+                        <ComboBox
+                            Name="ReturnDtoTextBox"
+                            IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True"
+                            Validation.ErrorTemplate="{StaticResource validationTemplate}"
+                            Text="{Binding DtoFileName, NotifyOnValidationError=True, UpdateSourceTrigger=LostFocus, ValidatesOnDataErrors=True}"
+                            ItemsSource="{Binding Dtos}"
+                            DisplayMemberPath="ClassName"
+                            SelectedValuePath="ClassName"
+                            Width="230">
+                            <ComboBox.Style>
+                                <Style TargetType="ComboBox">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedItem, ElementName=ReturnTypeComboBox}" Value="Custom DTO">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ComboBox.Style>
+                        </ComboBox>
+                        <ComboBox
+                            Name="ReturnBuiltInTextBox"
+                            IsEditable="False"
+                            Validation.ErrorTemplate="{StaticResource validationTemplate}"
+                            SelectedItem="{Binding SelectedBuiltInType}"
+                            ItemsSource="{Binding BuiltInTypes}"
+                            DisplayMemberPath="Name"
+                            Width="230">
+                            <ComboBox.Style>
+                                <Style TargetType="ComboBox">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedItem, ElementName=ReturnTypeComboBox}" Value="Built-in Type">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ComboBox.Style>
+                        </ComboBox>
+                    </StackPanel>
 
-            <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,5,10,0">
+                    <StackPanel
+                        Grid.Row="1" Grid.Column="0"
+                        Margin="0, 10"
+                        Orientation="Horizontal">
+                        <CheckBox
+                            Name="UseListCheckBox"
+                            Margin="0,0,15,0"
+                            IsChecked="{Binding UseList}">
+                            Use List
+                            <CheckBox.Style>
+                                <Style TargetType="CheckBox">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedItem, ElementName=ReturnTypeComboBox}" Value="None">
+                                            <Setter Property="IsEnabled" Value="False" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </CheckBox.Style>
+                        </CheckBox>
+                        <RadioButton
+                            Margin="0,0,10,0"
+                            IsChecked="{Binding ReturnCollection, Mode=TwoWay}"
+                            IsEnabled="{Binding ElementName=UseListCheckBox, Path=IsChecked}">
+                            Return Collection
+                        </RadioButton>
+                        <RadioButton
+                            IsChecked="{Binding ReturnPagedList, Mode=TwoWay}"
+                            IsEnabled="{Binding ElementName=UseListCheckBox, Path=IsChecked}">
+                            Return Paged List
+                        </RadioButton>
+                    </StackPanel>
+                </Grid>
+            </GroupBox>
+
+            <StackPanel Grid.Row="8" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,10,10,0">
                 <Button Width="60"
                     Height="25"
                     Margin="0,0,15,0"

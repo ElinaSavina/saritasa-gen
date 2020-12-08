@@ -22,6 +22,9 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
     {
         private const string MediatrPackageName = "MediatR";
         private const string SaritasaPaginationPackageName = "Saritasa.Tools.Common.Pagination";
+        private const string NoneReturnType = "None";
+        private const string BuiltInReturnType = "Built-in Type";
+        private const string CustomDtoReturnType = "Custom DTO";
 
         private readonly IGenerationService generationService;
         private readonly IFormattingService formattingService;
@@ -34,6 +37,7 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
         private bool isBusy;
         private string baseClassFileName;
         private string dtoFileName;
+        private bool useList;
 
         #region Auxiliary properties to format names
 
@@ -50,6 +54,26 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
         private string BaseClassName => Path.GetFileNameWithoutExtension(BaseClassFileName);
 
         #endregion Auxiliary properties to format names
+
+        /// <summary>
+        /// True to return list in command or query.
+        /// </summary>
+        public bool UseList
+        {
+            get => useList;
+            set
+            {
+                useList = value;
+                if (!useList)
+                {
+                    ReturnCollection = false;
+                    OnPropertyChanged(nameof(ReturnCollection));
+
+                    ReturnPagedList = false;
+                    OnPropertyChanged(nameof(ReturnPagedList));
+                }
+            }
+        }
 
         /// <summary>
         /// True if command is creating.
@@ -82,6 +106,11 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
         public string FeatureName { get; set; }
 
         /// <summary>
+        /// Return type. None, Simple type or Custom DTO.
+        /// </summary>
+        public string ReturnType { get; set; }
+
+        /// <summary>
         /// DTO file name.
         /// </summary>
         public string DtoFileName
@@ -94,14 +123,19 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
         }
 
         /// <summary>
-        /// True if DTO is used.
+        /// Built-in type name.
         /// </summary>
-        public bool IsDtoUsed { get; set; }
+        public ReturnType SelectedBuiltInType { get; set; }
 
         /// <summary>
-        /// True to return list.
+        /// True to return paged list.
         /// </summary>
-        public bool IsListReturned { get; set; }
+        public bool ReturnPagedList { get; set; }
+
+        /// <summary>
+        /// True to return simple collection.
+        /// </summary>
+        public bool ReturnCollection { get; set; }
 
         /// <summary>
         /// True if base class is used.
@@ -123,15 +157,51 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
         /// </summary>
         public ICommand CancelCommand { get; }
 
+        #region Collections
+
         /// <summary>
         /// Classes names in a project.
         /// </summary>
-        public List<ClassModel> Classes { get; set; }
+        public List<ClassModel> Classes { get; private set; }
 
         /// <summary>
         /// DTOs.
         /// </summary>
-        public List<ClassModel> Dtos { get; set; }
+        public List<ClassModel> Dtos { get; private set; }
+
+        /// <summary>
+        /// List of possible return types.
+        /// </summary>
+        public List<string> ReturnTypes => new List<string>
+        {
+            NoneReturnType,
+            BuiltInReturnType,
+            CustomDtoReturnType,
+        };
+
+        /// <summary>
+        /// Built-in types.
+        /// </summary>
+        public List<ReturnType> BuiltInTypes => new List<ReturnType>
+        {
+            new ReturnType("bool", typeof(bool).Namespace, true),
+            new ReturnType("byte", typeof(byte).Namespace, true),
+            new ReturnType("char", typeof(char).Namespace, true),
+            new ReturnType("decimal", typeof(decimal).Namespace, true),
+            new ReturnType("double", typeof(double).Namespace, true),
+            new ReturnType("float", typeof(float).Namespace, true),
+            new ReturnType("int", typeof(int).Namespace, true),
+            new ReturnType("long", typeof(long).Namespace, true),
+            new ReturnType("object", typeof(object).Namespace, true),
+            new ReturnType("sbyte", typeof(sbyte).Namespace, true),
+            new ReturnType("short", typeof(short).Namespace, true),
+            new ReturnType("string", typeof(string).Namespace, true),
+            new ReturnType("uint", typeof(uint).Namespace, true),
+            new ReturnType("ulong", typeof(ulong).Namespace, true),
+            new ReturnType("ushort", typeof(ushort).Namespace, true),
+        };
+
+        #endregion Collections
 
         #region INotifyPropertyChanged members
 
@@ -254,23 +324,18 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
                      MediatrPackageName
                 };
 
-                var dtoNamespace = string.Empty;
-
-                if (IsDtoUsed && !string.IsNullOrEmpty(DtoFileName))
+                var returnType = GetReturnType(dte, featureFolder);
+                if (!string.IsNullOrEmpty(returnType?.Namespace))
                 {
-                    dtoNamespace = CreateDtoIfNotExists(dte, featureFolder);
-                    if (!string.IsNullOrEmpty(dtoNamespace))
-                    {
-                        listOfUsingsForHandler.Add(dtoNamespace);
-                    }
+                    listOfUsingsForHandler.Add(returnType.Namespace);
                 }
 
                 var className = IsQueryCreated ? QueryName : CommandName;
                 var handlerName = IsQueryCreated ? QueryHandlerName : CommandHandlerName;
 
-                CreateCommandOrQuery(dte, featureFolder, className, dtoNamespace);
+                CreateCommandOrQuery(dte, featureFolder, className, returnType);
 
-                CreateHandler(dte, selectedItem, featureFolder, listOfUsingsForHandler, handlerName, className);
+                CreateHandler(dte, selectedItem, featureFolder, listOfUsingsForHandler, handlerName, className, returnType);
             }
             catch (Exception)
             {
@@ -280,6 +345,29 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
             {
                 IsBusy = false;
                 waitDialog.EndWaitDialog();
+            }
+        }
+
+        private ReturnType GetReturnType(DTE dte, ProjectItem featureFolder)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            switch (ReturnType)
+            {
+                case BuiltInReturnType:
+                    return SelectedBuiltInType;
+
+                case CustomDtoReturnType:
+                    ReturnType returnType = null;
+                    if (!string.IsNullOrEmpty(DtoFileName))
+                    {
+                        returnType.Namespace = CreateDtoIfNotExists(dte, featureFolder);
+                        returnType.IsBuiltIn = false;
+                        returnType.Name = DtoName;
+                    }
+
+                    return returnType;
+
+                default: return null;
             }
         }
 
@@ -308,7 +396,7 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
             return string.Empty;
         }
 
-        private CodeClass GetOrCreateClass(DTE dte, SelectedItem selectedItem, string className)
+        private CodeClass GetOrCreateClass(DTE dte, SelectedItem selectedItem, string className, List<string> listOfUsings)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -324,11 +412,13 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
             }
             else
             {
+                listOfUsings.Add(existsClass.ClassNamespace);
                 return searchService.FindClassInProject(existsClass.ContainingProject.ProjectItems, BaseClassName);
             }
         }
 
-        private void CreateHandler(DTE dte, SelectedItem selectedFolder, ProjectItem featureFolder, List<string> listOfUsings, string handlerName, string className)
+        private void CreateHandler(DTE dte, SelectedItem selectedFolder, ProjectItem featureFolder, List<string> listOfUsings,
+            string handlerName, string className, ReturnType returnType)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -336,10 +426,10 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
 
             if (IsBaseClassUsed && !string.IsNullOrEmpty(BaseClassName))
             {
-                baseClass = GetOrCreateClass(dte, selectedFolder, BaseClassName);
+                baseClass = GetOrCreateClass(dte, selectedFolder, BaseClassName, listOfUsings);
             }
 
-            var returnType = GetReturnType();
+            var formattedReturnType = GetFormattedReturnType(returnType);
 
             AddPaginationNamespaceIfListReturned(listOfUsings);
 
@@ -348,13 +438,13 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
                 Name = handlerName,
                 BaseClass = baseClass,
                 CommandOrQueryName = className,
-                ReturnType = returnType,
+                ReturnType = formattedReturnType,
                 IsQueryHandler = IsQueryCreated,
                 ListOfUsings = listOfUsings
             });
         }
 
-        private void CreateCommandOrQuery(DTE dte, ProjectItem selectedFolder, string className, string dtoNamespace)
+        private void CreateCommandOrQuery(DTE dte, ProjectItem selectedFolder, string className, ReturnType returnType)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             var fileName = formattingService.FormatClassName(className);
@@ -364,16 +454,16 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
             var createdClass = searchService.FindClassByName(classNamespace, className);
             createdClass.Access = vsCMAccess.vsCMAccessPublic;
             createdClass.DocComment = $"<doc><summary>\n{formattingService.GetPrettyName(className)}.\n</summary></doc>";
-            createdClass.AddImplementedInterface(GetMediatRImplementedInterface());
+            createdClass.AddImplementedInterface(GetMediatRImplementedInterface(returnType));
 
             var listOfUsings = new List<string>
             {
                 MediatrPackageName
             };
 
-            if (!string.IsNullOrEmpty(dtoNamespace))
+            if (!string.IsNullOrEmpty(returnType?.Namespace))
             {
-                listOfUsings.Add(dtoNamespace);
+                listOfUsings.Add(returnType.Namespace);
             }
 
             AddPaginationNamespaceIfListReturned(listOfUsings);
@@ -381,31 +471,40 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
             generationService.AddUsingsToClass(projectItem.FileCodeModel.CodeElements, listOfUsings);
         }
 
-        private string GetMediatRImplementedInterface()
+        private string GetMediatRImplementedInterface(ReturnType returnType)
         {
-            var returnType = GetReturnType();
-            if (!string.IsNullOrEmpty(returnType))
+            if (returnType == null)
             {
-                return $"MediatR.IRequest<{returnType}>";
+                return $"MediatR.IRequest";
             }
 
-            return $"MediatR.IRequest";
+            return $"MediatR.IRequest<{GetFormattedReturnType(returnType)}>";
         }
 
-        private string GetReturnType()
+        private string GetFormattedReturnType(ReturnType returnType)
         {
-            if (IsDtoUsed && !string.IsNullOrEmpty(DtoName))
+            if (ReturnPagedList)
             {
-                return IsListReturned ? $"PagedList<{DtoName}>" : DtoName;
+                return $"PagedList<{returnType.Name}>";
             }
-            return string.Empty;
+
+            if (ReturnCollection)
+            {
+                return $"ICollection<{returnType.Name}>";
+            }
+
+            return returnType.Name;
         }
 
         private void AddPaginationNamespaceIfListReturned(List<string> listOfUsings)
         {
-            if (IsDtoUsed && !string.IsNullOrEmpty(DtoName) && IsListReturned)
+            if (ReturnPagedList)
             {
                 listOfUsings.Add(SaritasaPaginationPackageName);
+            }
+            else if (ReturnCollection)
+            {
+                listOfUsings.Add(typeof(ICollection).Namespace);
             }
         }
     }
