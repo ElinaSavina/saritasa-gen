@@ -296,7 +296,8 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
             var project = selectedItem.Project ?? selectedItem.ProjectItem.ContainingProject;
 
             // Make sure that file doesn't exist.
-            if (searchService.FindItemInProject(project.ProjectItems, FeatureName, EnvDTE.Constants.vsProjectItemKindPhysicalFolder, true) != null)
+            var existingFolder = searchService.FindItemInProject(project.ProjectItems, FeatureName, EnvDTE.Constants.vsProjectItemKindPhysicalFolder, true);
+            if (existingFolder != null || Directory.Exists(Path.Combine(Path.GetDirectoryName(project.FullName), FeatureName)))
             {
                 dialogService.ShowError("The folder already exists.", "Error");
                 IsBusy = false;
@@ -357,15 +358,17 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
                     return SelectedBuiltInType;
 
                 case CustomDtoReturnType:
-                    ReturnType returnType = null;
                     if (!string.IsNullOrEmpty(DtoFileName))
                     {
-                        returnType.Namespace = CreateDtoIfNotExists(dte, featureFolder);
-                        returnType.IsBuiltIn = false;
-                        returnType.Name = DtoName;
+                        return new ReturnType
+                        {
+                            Namespace = CreateDtoIfNotExists(dte, featureFolder),
+                            IsBuiltIn = false,
+                            Name = DtoName,
+                        };
                     }
 
-                    return returnType;
+                    return null;
 
                 default: return null;
             }
