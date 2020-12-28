@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" ?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="SaritasaGen.FeatureGenerator.2568cd94-e277-4980-b640-76ec06f0a4dd" Version="1.0" Language="en-US" Publisher="Elina" />
+        <Identity Id="SaritasaGen.FeatureGenerator.2568cd94-e277-4980-b640-76ec06f0a4dd" Version="0.1.1" Language="en-US" Publisher="Elina" />
         <DisplayName>SaritasaGen.FeatureGenerator</DisplayName>
         <Description xml:space="preserve">This app helps you to create features using MediatR.</Description>
         <MoreInfo>https://github.com/ElinaSavina/saritasa-gen</MoreInfo>

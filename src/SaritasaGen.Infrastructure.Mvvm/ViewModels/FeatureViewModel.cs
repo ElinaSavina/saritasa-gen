@@ -292,12 +292,11 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
 
             // We get the first item becase it's not possible when selected items more than 1 and less than 0.
             var selectedItem = dte.SelectedItems.Item(1);
-
             var project = selectedItem.Project ?? selectedItem.ProjectItem.ContainingProject;
 
             // Make sure that file doesn't exist.
             var existingFolder = searchService.FindItemInProject(project.ProjectItems, FeatureName, EnvDTE.Constants.vsProjectItemKindPhysicalFolder, true);
-            if (existingFolder != null || Directory.Exists(Path.Combine(Path.GetDirectoryName(project.FullName), FeatureName)))
+            if (existingFolder != null || Directory.Exists(GetDirectoryPath(selectedItem, project.FullName)))
             {
                 dialogService.ShowError("The folder already exists.", "Error");
                 IsBusy = false;
@@ -347,6 +346,18 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
                 IsBusy = false;
                 waitDialog.EndWaitDialog();
             }
+        }
+
+        private string GetDirectoryPath(SelectedItem selectedItem, string projectPath)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            if (selectedItem.ProjectItem != null)
+            {
+                var selectedItemPath = selectedItem.ProjectItem.Properties.Item("LocalPath").Value.ToString();
+                return Path.Combine(selectedItemPath, FeatureName);
+            }
+
+            return Path.Combine(Path.GetDirectoryName(projectPath), FeatureName);
         }
 
         private ReturnType GetReturnType(DTE dte, ProjectItem featureFolder)
@@ -486,6 +497,11 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
 
         private string GetFormattedReturnType(ReturnType returnType)
         {
+            if (returnType == null)
+            {
+                return null;
+            }
+
             if (ReturnPagedList)
             {
                 return $"PagedList<{returnType.Name}>";
