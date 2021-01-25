@@ -21,7 +21,8 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
     public class FeatureViewModel : INotifyDataErrorInfo, INotifyPropertyChanged
     {
         private const string MediatrPackageName = "MediatR";
-        private const string SaritasaPaginationPackageName = "Saritasa.Tools.Common.Pagination";
+        private const string SaritasaPaginationPackageName = "Saritasa.Tools.Common";
+        private const string SaritasaPaginationNamespaceName = "Saritasa.Tools.Common.Pagination";
         private const string NoneReturnType = "None";
         private const string BuiltInReturnType = "Built-in Type";
         private const string CustomDtoReturnType = "Custom DTO";
@@ -314,6 +315,11 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
                 // Install MediatR.
                 generationService.InstallNugetPackage(project, MediatrPackageName);
 
+                if (ReturnPagedList)
+                {
+                    generationService.InstallNugetPackage(project, SaritasaPaginationPackageName);
+                }
+
                 var projectItems = selectedItem.Project?.ProjectItems ?? selectedItem.ProjectItem.ProjectItems;
                 var featureFolder = CreateFeature(projectItems, FeatureName);
 
@@ -519,7 +525,7 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
         {
             if (ReturnPagedList)
             {
-                listOfUsings.Add(SaritasaPaginationPackageName);
+                listOfUsings.Add(SaritasaPaginationNamespaceName);
             }
             else if (ReturnCollection)
             {
