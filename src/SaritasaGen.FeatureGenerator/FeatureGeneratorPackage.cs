@@ -1,10 +1,10 @@
-﻿using Microsoft.VisualStudio.Shell;
+﻿using System;
+using System.Runtime.InteropServices;
+using System.Threading;
+using Microsoft.VisualStudio.Shell;
 using SaritasaGen.FeatureGenerator.Commands;
 using SaritasaGen.FeatureGenerator.DependencyInjection;
 using SaritasaGen.FeatureGenerator.Views;
-using System;
-using System.Runtime.InteropServices;
-using System.Threading;
 using Task = System.Threading.Tasks.Task;
 
 namespace SaritasaGen.FeatureGenerator

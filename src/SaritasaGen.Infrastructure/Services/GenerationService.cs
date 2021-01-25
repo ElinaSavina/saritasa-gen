@@ -92,7 +92,7 @@ namespace SaritasaGen.Infrastructure.Services
                     dte.StatusBar.Text = $@"Installing {package} NuGet package...";
                     var installer = componentModel.GetService<IVsPackageInstaller>();
                     installer.InstallPackage(null, project, package, (System.Version)null, false);
-                    dte.StatusBar.Text = $@"The {package} NuGet package was installed.";
+                    dte.StatusBar.Text = $@"The {package} NuGet package has been installed.";
                 }
             }
             catch
@@ -112,6 +112,8 @@ namespace SaritasaGen.Infrastructure.Services
             var handlerClass = searchService.FindClassByName(handlerItem.FileCodeModel.CodeElements.OfType<CodeNamespace>().First(), handlerData.Name);
             handlerClass.Access = vsCMAccess.vsCMAccessProject;
             handlerClass.DocComment = $"<doc><summary>\nHandle <see cref=\"{handlerData.CommandOrQueryName}\" /> {GetActionName(handlerData.IsQueryHandler)}.\n</summary></doc>";
+            handlerClass.GetEndPoint(vsCMPart.vsCMPartNavigate).CreateEditPoint()
+                .Insert($" : {GetMediatRImplementedInterface(handlerData.CommandOrQueryName, handlerData.ReturnType)}");
 
             if (handlerData.BaseClass != null)
             {
@@ -141,8 +143,6 @@ namespace SaritasaGen.Infrastructure.Services
                 }
             }
 
-            handlerClass.AddImplementedInterface(GetMediatRImplementedInterface(handlerData.CommandOrQueryName, handlerData.ReturnType));
-
             var returnType = string.IsNullOrEmpty(handlerData.ReturnType) ? "Task<Unit>" : $"Task<{handlerData.ReturnType}>";
             AddAsyncMethodToClass(handlerClass, "Handle", handlerData.CommandOrQueryName, GetActionName(handlerData.IsQueryHandler), returnType);
 
@@ -162,7 +162,7 @@ namespace SaritasaGen.Infrastructure.Services
                 types += $", {returnType}";
             }
 
-            return $"MediatR.IRequestHandler<{types}>";
+            return $"IRequestHandler<{types}>";
         }
     }
 }

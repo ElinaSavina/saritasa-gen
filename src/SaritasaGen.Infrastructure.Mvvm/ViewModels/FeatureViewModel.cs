@@ -247,9 +247,9 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
         /// <param name="searchService">Search service.</param>
         /// <param name="dialogService">Dialog service.</param>
         public FeatureViewModel(IGenerationService generationService,
-                                        IFormattingService formattingService,
-                                        ISearchService searchService,
-                                        IDialogService dialogService)
+                                IFormattingService formattingService,
+                                ISearchService searchService,
+                                IDialogService dialogService)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             this.formattingService = formattingService;
@@ -468,7 +468,7 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
             var createdClass = searchService.FindClassByName(classNamespace, className);
             createdClass.Access = vsCMAccess.vsCMAccessPublic;
             createdClass.DocComment = $"<doc><summary>\n{formattingService.GetPrettyName(className)}.\n</summary></doc>";
-            createdClass.AddImplementedInterface(GetMediatRImplementedInterface(returnType));
+            createdClass.GetEndPoint(vsCMPart.vsCMPartNavigate).CreateEditPoint().Insert($" : {GetMediatRImplementedInterface(returnType)}");
 
             var listOfUsings = new List<string>
             {
@@ -489,10 +489,10 @@ namespace SaritasaGen.Infrastructure.Mvvm.ViewModels
         {
             if (returnType == null)
             {
-                return $"MediatR.IRequest";
+                return $"IRequest";
             }
 
-            return $"MediatR.IRequest<{GetFormattedReturnType(returnType)}>";
+            return $"IRequest<{GetFormattedReturnType(returnType)}>";
         }
 
         private string GetFormattedReturnType(ReturnType returnType)
